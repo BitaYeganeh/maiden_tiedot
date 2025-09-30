@@ -5,6 +5,18 @@ const App = () => {
   const [query, setQuery] = useState('')
   const [countries, setCountries] = useState([])
   const [error, setError] = useState(null)
+  const [selectedCountry, setSelectedCountry] = useState(null)
+
+
+  // Add Handlers beside country's name
+  const handleShow = (country) => {
+    setSelectedCountry(country)
+  }
+ //Close the handler
+  const handleClose = () => {
+    setSelectedCountry(null)
+  }
+
 
   const handleSearch = (e) => {
     e.preventDefault()
@@ -40,12 +52,39 @@ const App = () => {
 
       {error ? <p>{error}</p> : null}
 
+      {selectedCountry ? (
+        <div>
+          <h2>{selectedCountry.name.common}</h2>
+          <p>Capital: {selectedCountry.capital ? selectedCountry.capital.join(', ') : '-' }</p>
+          <p>Area: {selectedCountry.area} km²</p>
+          <p>Languages: {selectedCountry.languages ? Object.values(selectedCountry.languages). join(', '): '-'}</p>
+
+          {selectedCountry.flags?.png && (
+            <img 
+              src={selectedCountry.flags.png}
+              alt={`Flag of ${selectedCountry.name.common}`}
+              width="200"
+            />
+          )}
+          {/* Back to results button */}
+          <div style={{ marginTop: '10px' }}>
+              <button type="button" onClick={handleClose}>Back to results</button>
+          </div>
+        </div>
+      ) : null}
+
       {countries.length > 10 ? (
-        <p>Too many matches found, specify another filter!</p>
+        <p>Too many matches found, please specify more filter!</p>
       ) : countries.length > 1 ? (
         <ul>
           {countries.map(c => (
-            <li key={c.name.common}>{c.name.common}</li>
+            <li 
+            key={c.name.common}>
+            {c.name.common}
+            <button 
+            type="button" onClick={()=> handleShow(c)}>Show</button>
+
+            </li>
           ))}
         </ul>
       ) : countries.length === 1 ? (
@@ -57,7 +96,7 @@ const App = () => {
           <img
             src={countries[0].flags.png}
             alt={`Flag of ${countries[0].name.common}`}
-            width="150"
+            width="200"
           />
         </div>
       ) : null}
